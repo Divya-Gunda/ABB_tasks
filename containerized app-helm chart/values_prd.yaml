@@ -1,0 +1,160 @@
+# Default values for crushftp.
+
+# Project specific
+storageaccountname: azurestorageaccountname
+storageaccountkey: azurestorageaccountkey
+tenantid: ceaa63aa-5d5c-4c7d-94b0-02f9a3ab6a8c
+keyvault:
+  name: kv-crush-01-p
+  identity: 838c0c15-fb27-474f-8ecd-90bfdc1791e7
+secrets:
+  appsecret: crushftpprdpass
+
+certs:
+  appcert: prodcrushftp
+
+keys:
+  appkey: prdcrushftpkey
+
+admin:
+  username: crushadmin
+  protocol: https
+  port: 443
+tls:
+  secretName: crushftp-tls
+volumes:  # Volumes to mount to the image of other sites, etc.
+   - name: config 
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/config 
+     shareName: config
+   - name: oracle
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/oracle
+     shareName: oracle
+   - name: salesforce
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/salesforce
+     shareName: salesforce
+   - name: truven
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/truven
+     shareName: truven
+   - name: workday
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/workday
+     shareName: workday
+   - name: mavenlink
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/mavenlink
+     shareName: mavenlink
+   - name: boomi
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net 
+     mountPath: /mnt/boomi
+     shareName: boomi
+   - name: oracleepm
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net
+     mountPath: /mnt/oracleepm
+     shareName: oracleepm
+   - name: cioit-workday
+     server: stcrushftpfiles01p.privatelink.file.core.windows.net
+     mountPath: /mnt/cioit-workday
+     shareName: cioit-workday
+configVolume:
+  size: 8Gi
+loadBalancerIp: 10.56.27.230
+features:
+  enableFtp: false
+
+# Shared
+shared:
+  hosts:
+    crushFtp:
+      root: .merative.com 
+      prefix: crushsftp
+  ingress:
+    clusterIssuer: ''
+    trustcert: crushftproot
+    appcert: crushftp-prd-tls
+  storageClassName: default
+
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: sampleacrfortesting.azurecr.io/ciosftp
+  pullPolicy: Always 
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "11.2.3"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {} 
+ #  fsGroup: 2000 
+
+#securityContext: {} 
+  #capabilities:
+    #drop:
+    #- ALL
+  #readOnlyRootFilesystem: true
+  #runAsNonRoot: true
+  #runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 443 
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 100m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

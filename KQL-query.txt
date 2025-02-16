@@ -1,0 +1,5 @@
+ContainerLog
+| where TimeGenerated > ago(24h)
+| where LogEntry contains "error" or LogEntry contains "exception"
+| summarize Count = count() by bin(TimeGenerated, 1h), ContainerID, LogEntry
+| order by TimeGenerated desc

@@ -1,0 +1,13 @@
+PS C:\Users\dgunda\tasks\containerized app-helm chart> helm install crushftp ./containerized app-helm chart -f ./containerized app-helm chart/values-sit.yaml -n ciosftp-ns-sit
+
+NAME: crushftp
+LAST DEPLOYED: Sun Feb 16 11:23:43 2025
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+Crush FTP is now accessible at https://crushftpsit.merative.com
+This will show as deployment and pod crushftp-dbd788b58-lzr5n in namespace default.
+
+Happy Helming!
