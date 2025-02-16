@@ -1,0 +1,24 @@
+Build the image:
+------------------
+
+docker build -f <dockerfile name> -t <image name>:<tag> .
+
+docker build -f crushftp.dockerfile -t ciosftp:11.2.3 .
+
+
+Push the image to ACR:
+---------------------
+
+docker tag ciosftp:11.2.3 sampleacrfortesting.azurecr.io/ciosftp:11.2.3
+
+az acr login -n sampleacrfortesting
+docker push sampleacrfortesting.azurecr.io/ciosftp:11.2.3
+
+
+To pull the image from ACR to local:
+-------------------------------------------
+
+docker pull sampleacrfortesting.azurecr.io/ciosftp:11.2.3
+
+
+
