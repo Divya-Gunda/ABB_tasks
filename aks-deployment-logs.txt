@@ -1,0 +1,126 @@
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/azurerm from the dependency lock file
+- Installing hashicorp/azurerm v3.27.0...
+- Installed hashicorp/azurerm v3.27.0 (signed by HashiCorp)
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now be run from within the directory containing "main.tf". If you ever
+forget, run "terraform init" again.
+
+------------------------------------------------------------
+
+terraform plan
+
+Terraform will perform the following actions:
+
+  # azurerm_resource_group.aks_rg will be created
+  + resource "azurerm_resource_group" "aks_rg" {
+      + id       = (known after apply)
+      + location = "East US"
+      + name     = "aks-rg"
+    }
+
+  # azurerm_virtual_network.aks_vnet will be created
+  + resource "azurerm_virtual_network" "aks_vnet" {
+      + id                        = (known after apply)
+      + location                  = "East US"
+      + name                      = "aks-vnet"
+      + resource_group_name       = "aks-rg"
+      + address_space             = [
+          + "10.0.0.0/8",
+        ]
+    }
+
+  # azurerm_subnet.aks_subnet will be created
+  + resource "azurerm_subnet" "aks_subnet" {
+      + id                       = (known after apply)
+      + name                     = "aks-subnet"
+      + resource_group_name      = "aks-rg"
+      + virtual_network_name     = "aks-vnet"
+      + address_prefixes         = [
+          + "10.240.0.0/16",
+        ]
+    }
+
+  # azurerm_log_analytics_workspace.aks_workspace will be created
+  + resource "azurerm_log_analytics_workspace" "aks_workspace" {
+      + id                        = (known after apply)
+      + location                  = "East US"
+      + name                      = "aks-log-analytics-workspace"
+      + resource_group_name       = "aks-rg"
+      + sku                       = "PerGB2018"
+    }
+
+  # azurerm_kubernetes_cluster.aks_cluster will be created
+  + resource "azurerm_kubernetes_cluster" "aks_cluster" {
+      + id                           = (known after apply)
+      + location                     = "East US"
+      + name                         = "aks-cluster"
+      + resource_group_name          = "aks-rg"
+      + dns_prefix                   = "aks-cluster"
+      + enable_rbac                  = true
+      + identity {
+          + type                      = "SystemAssigned"
+        }
+      + addon_profile {
+          + oms_agent {
+              + enabled                = true
+              + log_analytics_workspace_id = (known after apply)
+            }
+        }
+      + default_node_pool {
+          + name                      = "default"
+          + node_count                = 3
+          + vm_size                   = "Standard_DS2_v2"
+          + vnet_subnet_id            = (known after apply)
+        }
+    }
+
+Plan: 5 to add, 0 to change, 0 to destroy.
+
+------------------------------------------------------------
+
+terraform apply
+
+azurerm_resource_group.aks_rg: Creating...
+azurerm_virtual_network.aks_vnet: Creating...
+azurerm_subnet.aks_subnet: Creating...
+azurerm_log_analytics_workspace.aks_workspace: Creating...
+azurerm_kubernetes_cluster.aks_cluster: Creating...
+
+azurerm_resource_group.aks_rg: Creation complete after 2s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/aks-rg]
+azurerm_virtual_network.aks_vnet: Creation complete after 4s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/aks-rg/providers/Microsoft.Network/virtualNetworks/aks-vnet]
+azurerm_subnet.aks_subnet: Creation complete after 3s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/aks-rg/providers/Microsoft.Network/virtualNetworks/aks-vnet/subnets/aks-subnet]
+azurerm_log_analytics_workspace.aks_workspace: Creation complete after 5s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/aks-rg/providers/Microsoft.OperationalInsights/workspaces/aks-log-analytics-workspace]
+azurerm_kubernetes_cluster.aks_cluster: Creation complete after 4m12s [id=/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/aks-rg/providers/Microsoft.ContainerService/managedClusters/aks-cluster]
+
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+kube_config = <<EOT
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://xxxxxxxxxx-xxxxxxxxx-xxxxx.aks.io
+    certificate-authority-data: (sensitive value)
+  name: aks-cluster
+contexts:
+- context:
+    cluster: aks-cluster
+    user: kubernetes-admin
+  name: aks-cluster-context
+current-context: aks-cluster-context
+kind: Config
+preferences: {}
+users:
+- name: kubernetes-admin
+  user:
+    client-certificate-data: (sensitive value)
+    client-key-data: (sensitive value)
+EOT
